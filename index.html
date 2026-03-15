@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +46,7 @@
 <body>
 <div class="container">
   <h1>Claude March 2026 Usage Promotion</h1>
-  <p class="subtitle">13-27 March 2026 -- off-peak hours = x2 usage</p>
+  <p class="subtitle">13-27 March 2026 -- five-hour usage doubled during off-peak hours</p>
 
   <div class="card">
     <h2>Current status</h2>
@@ -81,19 +81,22 @@
 
   <div class="card">
     <h2>Details</h2>
-    <div class="info-row"><span class="info-label">Benefit</span><span class="info-value">x2 usage during off-peak</span></div>
-    <div class="info-row"><span class="info-label">Peak hours (ET)</span><span class="info-value">08:00-14:00</span></div>
+    <div class="info-row"><span class="info-label">Benefit</span><span class="info-value">Five-hour usage doubled during off-peak</span></div>
+    <div class="info-row"><span class="info-label">Peak hours</span><span class="info-value">8 AM - 2 PM ET / 5 - 11 AM PT</span></div>
     <div class="info-row"><span class="info-label">Weekends</span><span class="info-value highlight">Off-peak all day</span></div>
-    <div class="info-row"><span class="info-label">Plans</span><span class="info-value">Free, Pro, Max, Team</span></div>
-    <div class="info-row"><span class="info-label">Products</span><span class="info-value">Web, Desktop, Mobile, Code, Excel, PPT</span></div>
+    <div class="info-row"><span class="info-label">Plans</span><span class="info-value">Free, Pro, Max, Team (not Enterprise)</span></div>
+    <div class="info-row"><span class="info-label">Products</span><span class="info-value">Web, Desktop, Mobile, Cowork, Code, Excel, PPT</span></div>
     <div class="info-row"><span class="info-label">Bonus vs weekly limit</span><span class="info-value highlight">Does not count</span></div>
+    <div class="info-row"><span class="info-label">Enrollment</span><span class="info-value">Automatic, no action required</span></div>
+    <div class="info-row"><span class="info-label">After promotion</span><span class="info-value">Limits return to standard levels</span></div>
     <div class="info-row"><span class="info-label">Your timezone</span><span class="info-value" id="tz-name">...</span></div>
   </div>
 </div>
 
 <script>
 // peak hours in ET: 08:00-14:00 (America/New_York)
-const PROMO_START = new Date("2026-03-13T00:00:00-05:00"); // ET
+// DST starts March 8, 2026 -- entire promo period is EDT (UTC-4)
+const PROMO_START = new Date("2026-03-13T00:00:00-04:00"); // EDT
 const PROMO_END   = new Date("2026-03-28T00:00:00-04:00"); // after March 27 EDT
 const PEAK_START_ET = 8;  // 08:00 ET
 const PEAK_END_ET   = 14; // 14:00 ET
@@ -101,38 +104,38 @@ const PEAK_END_ET   = 14; // 14:00 ET
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.getElementById("tz-name").textContent = tz;
 
-function etToLocal(hour) {
-  // create a date in ET with that hour, convert to local
-  const d = new Date();
-  const etStr = d.toLocaleDateString("en-US", { timeZone: "America/New_York" });
-  const [m, day, y] = etStr.split("/");
-  const et = new Date(`${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}T${String(hour).padStart(2,"0")}:00:00`);
-  // figure out ET offset right now
-  const etOffset = getTimezoneOffset("America/New_York", d);
-  const utc = new Date(et.getTime() + etOffset * 60000);
-  // convert utc to local
-  const localOffset = d.getTimezoneOffset();
-  const local = new Date(utc.getTime() - localOffset * 60000);
-  return local.getHours() + local.getMinutes() / 60;
-}
-
 function getTimezoneOffset(tz, date) {
   const utcStr = date.toLocaleString("en-US", { timeZone: "UTC" });
   const tzStr  = date.toLocaleString("en-US", { timeZone: tz });
   return (new Date(utcStr) - new Date(tzStr)) / 60000;
 }
 
-function isWeekend(date) {
-  const d = date.getDay();
-  return d === 0 || d === 6;
+function etToLocal(hour) {
+  const d = new Date();
+  const etStr = d.toLocaleDateString("en-US", { timeZone: "America/New_York" });
+  const [m, day, y] = etStr.split("/");
+  const et = new Date(`${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}T${String(hour).padStart(2,"0")}:00:00`);
+  const etOffset = getTimezoneOffset("America/New_York", d);
+  const utc = new Date(et.getTime() + etOffset * 60000);
+  const localOffset = d.getTimezoneOffset();
+  const local = new Date(utc.getTime() - localOffset * 60000);
+  return local.getHours() + local.getMinutes() / 60;
+}
+
+// check weekend by ET day, not local
+function isWeekendET(date) {
+  const etDay = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" })).getDay();
+  return etDay === 0 || etDay === 6;
+}
+
+function getETHour(now) {
+  const parts = now.toLocaleString("en-US", { timeZone: "America/New_York", hourCycle: "h23", hour: "2-digit", minute: "2-digit" }).split(":");
+  return parseInt(parts[0], 10) + parseInt(parts[1], 10) / 60;
 }
 
 function isPeakNow(now) {
-  if (isWeekend(now)) return false;
-  // get current hour in ET
-  const etStr = now.toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
-  const [h, m] = etStr.split(":").map(Number);
-  const etHour = h + m / 60;
+  if (isWeekendET(now)) return false;
+  const etHour = getETHour(now);
   return etHour >= PEAK_START_ET && etHour < PEAK_END_ET;
 }
 
@@ -141,10 +144,13 @@ function isPromoActive(now) {
 }
 
 function fmt(n) { return String(Math.floor(n)).padStart(2, "0"); }
-function fmtTime(h) { return fmt(h) + ":" + fmt((h % 1) * 60); }
+function fmtTime(h) {
+  const wrapped = ((h % 24) + 24) % 24;
+  return fmt(wrapped) + ":" + fmt((wrapped % 1) * 60);
+}
 
 function fmtCountdown(ms) {
-  if (ms <= 0) return "00:00:00";
+  if (ms <= 0 || isNaN(ms)) return "00:00:00";
   const s = Math.floor(ms / 1000);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -154,34 +160,56 @@ function fmtCountdown(ms) {
 
 function renderSchedule() {
   const now = new Date();
-  const localPeakStart = etToLocal(PEAK_START_ET);
-  const localPeakEnd   = etToLocal(PEAK_END_ET);
   const el = document.getElementById("today-schedule");
 
-  if (isWeekend(now)) {
+  if (isWeekendET(now)) {
     el.innerHTML = '<div class="schedule-item" style="grid-column:span 2;text-align:center;"><div class="label">weekend</div><div class="time" style="color:#6ee7b7;">Off-peak all day (00:00-24:00)</div></div>';
   } else {
-    const s1 = fmtTime(0), e1 = fmtTime(localPeakStart);
-    const s2 = fmtTime(localPeakEnd), e2 = "24:00";
-    const ps = fmtTime(localPeakStart), pe = fmtTime(localPeakEnd);
-    el.innerHTML =
-      '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + s1 + ' - ' + e1 + '</div></div>' +
-      '<div class="schedule-item"><div class="label">peak</div><div class="time" style="color:#fca5a5;">' + ps + ' - ' + pe + '</div></div>' +
-      '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + s2 + ' - ' + e2 + '</div></div>';
+    const localPeakStart = etToLocal(PEAK_START_ET);
+    const localPeakEnd   = etToLocal(PEAK_END_ET);
+    const crossesMidnight = localPeakStart > localPeakEnd;
+
+    if (crossesMidnight) {
+      // peak spans midnight: e.g. 23:00-05:00
+      el.innerHTML =
+        '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + fmtTime(localPeakEnd) + ' - ' + fmtTime(localPeakStart) + '</div></div>' +
+        '<div class="schedule-item"><div class="label">peak</div><div class="time" style="color:#fca5a5;">' + fmtTime(localPeakStart) + ' - ' + fmtTime(localPeakEnd) + ' (+1d)</div></div>';
+    } else {
+      el.innerHTML =
+        '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + fmtTime(0) + ' - ' + fmtTime(localPeakStart) + '</div></div>' +
+        '<div class="schedule-item"><div class="label">peak</div><div class="time" style="color:#fca5a5;">' + fmtTime(localPeakStart) + ' - ' + fmtTime(localPeakEnd) + '</div></div>' +
+        '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + fmtTime(localPeakEnd) + ' - 24:00</div></div>';
+    }
   }
 
   // timeline bar
-  if (!isWeekend(now)) {
+  if (!isWeekendET(now)) {
+    const localPeakStart = etToLocal(PEAK_START_ET);
+    const localPeakEnd   = etToLocal(PEAK_END_ET);
     const tl = document.getElementById("timeline");
-    const left = (localPeakStart / 24) * 100;
-    const width = ((localPeakEnd - localPeakStart) / 24) * 100;
     const existing = tl.querySelector(".timeline-peak");
     if (existing) existing.remove();
-    const div = document.createElement("div");
-    div.className = "timeline-peak";
-    div.style.left = left + "%";
-    div.style.width = width + "%";
-    tl.insertBefore(div, tl.firstChild);
+
+    const crossesMidnight = localPeakStart > localPeakEnd;
+    if (crossesMidnight) {
+      // two segments: [peakStart..24:00] and [00:00..peakEnd]
+      const div1 = document.createElement("div");
+      div1.className = "timeline-peak";
+      div1.style.left = (localPeakStart / 24 * 100) + "%";
+      div1.style.width = ((24 - localPeakStart) / 24 * 100) + "%";
+      tl.insertBefore(div1, tl.firstChild);
+      const div2 = document.createElement("div");
+      div2.className = "timeline-peak";
+      div2.style.left = "0%";
+      div2.style.width = (localPeakEnd / 24 * 100) + "%";
+      tl.insertBefore(div2, tl.firstChild);
+    } else {
+      const div = document.createElement("div");
+      div.className = "timeline-peak";
+      div.style.left = (localPeakStart / 24 * 100) + "%";
+      div.style.width = ((localPeakEnd - localPeakStart) / 24 * 100) + "%";
+      tl.insertBefore(div, tl.firstChild);
+    }
   }
 }
 
@@ -194,16 +222,14 @@ function renderCalendar() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // March 2026 starts on Sunday (day 0)
-  // first day of grid: Monday March 9 (to show full weeks covering 13-27)
   const startGrid = new Date(2026, 2, 9);
-  const endGrid   = new Date(2026, 2, 30); // show through March 29
+  const endGrid   = new Date(2026, 2, 30);
 
   let html = "";
   const d = new Date(startGrid);
   while (d < endGrid) {
     const inPromo = d >= new Date(2026, 2, 13) && d <= new Date(2026, 2, 27);
-    const we = isWeekend(d);
+    const we = d.getDay() === 0 || d.getDay() === 6;
     const isToday = d.getTime() === today.getTime();
     let cls = "day-cell";
     if (!inPromo) cls += " outside";
@@ -214,6 +240,10 @@ function renderCalendar() {
     d.setDate(d.getDate() + 1);
   }
   cal.innerHTML = html;
+}
+
+function getETNow(now) {
+  return new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
 }
 
 function update() {
@@ -231,12 +261,11 @@ function update() {
     badge.className = "status-badge status-ended";
     badge.textContent = "Ended";
     timer.textContent = "";
-    detail.textContent = "Promotion ended March 27, 2026";
+    detail.textContent = "Promotion ended March 27, 2026. Limits are back to standard.";
   } else if (isPeakNow(now)) {
     badge.className = "status-badge status-peak";
     badge.textContent = "Peak hours (standard limits)";
-    // time until peak ends
-    const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+    const etNow = getETNow(now);
     const peakEndToday = new Date(etNow);
     peakEndToday.setHours(PEAK_END_ET, 0, 0, 0);
     const diff = peakEndToday - etNow;
@@ -245,11 +274,11 @@ function update() {
   } else {
     badge.className = "status-badge status-off-peak";
     badge.textContent = "Off-peak (x2 usage!)";
-    if (isWeekend(now)) {
-      // time until Monday 08:00 ET
-      const dayOfWeek = now.getDay(); // 0=Sun, 6=Sat
-      let daysUntilMon = dayOfWeek === 6 ? 2 : 1;
-      const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+    const etNow = getETNow(now);
+    const etDay = etNow.getDay();
+
+    if (isWeekendET(now)) {
+      const daysUntilMon = etDay === 6 ? 2 : 1;
       const nextMon = new Date(etNow);
       nextMon.setDate(nextMon.getDate() + daysUntilMon);
       nextMon.setHours(PEAK_START_ET, 0, 0, 0);
@@ -257,20 +286,19 @@ function update() {
       timer.textContent = fmtCountdown(diff > 0 ? diff : 0);
       detail.textContent = "Off-peak until Monday";
     } else {
-      // next peak is today at 08:00 ET or tomorrow
-      const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
       const etH = etNow.getHours() + etNow.getMinutes() / 60;
       let target;
       if (etH < PEAK_START_ET) {
         target = new Date(etNow);
         target.setHours(PEAK_START_ET, 0, 0, 0);
       } else {
-        // after peak ended, off-peak until next day 08:00 or weekend
         target = new Date(etNow);
         target.setDate(target.getDate() + 1);
-        if (target.getDay() === 6) {
-          // next peak is Monday
+        const targetDay = target.getDay();
+        if (targetDay === 6) {
           target.setDate(target.getDate() + 2);
+        } else if (targetDay === 0) {
+          target.setDate(target.getDate() + 1);
         }
         target.setHours(PEAK_START_ET, 0, 0, 0);
       }
@@ -294,13 +322,11 @@ function update() {
 
   // promo info
   const promoInfo = document.getElementById("promo-info");
-  const startLocal = PROMO_START.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-  const endLocal   = new Date(PROMO_END - 1).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
   const totalDays = Math.round((PROMO_END - PROMO_START) / 86400000);
   const elapsed   = Math.max(0, Math.min(totalDays, Math.floor((now - PROMO_START) / 86400000)));
   promoInfo.innerHTML =
-    '<div class="info-row"><span class="info-label">Start</span><span class="info-value">' + startLocal + '</span></div>' +
-    '<div class="info-row"><span class="info-label">End</span><span class="info-value">' + endLocal + '</span></div>' +
+    '<div class="info-row"><span class="info-label">Start</span><span class="info-value">March 13, 2026</span></div>' +
+    '<div class="info-row"><span class="info-label">End</span><span class="info-value">March 27, 2026</span></div>' +
     '<div class="info-row"><span class="info-label">Progress</span><span class="info-value">' + elapsed + ' / ' + totalDays + ' days</span></div>';
 }
 
