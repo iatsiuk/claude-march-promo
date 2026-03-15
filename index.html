@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude March 2026 Usage Promotion</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f1a; color: #e0e0e0; min-height: 100vh; padding: 20px; }
+  .container { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin-bottom: 8px; color: #fff; }
+  .subtitle { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+  .card { background: #1a1a2e; border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #2a2a3e; }
+  .card h2 { font-size: 1.1rem; margin-bottom: 12px; color: #c4b5fd; }
+  .status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; }
+  .status-off-peak { background: #064e3b; color: #6ee7b7; }
+  .status-peak { background: #7f1d1d; color: #fca5a5; }
+  .status-ended { background: #374151; color: #9ca3af; }
+  .status-not-started { background: #1e3a5f; color: #93c5fd; }
+  .timer { font-size: 1.4rem; font-weight: 700; color: #fff; margin: 8px 0; font-variant-numeric: tabular-nums; }
+  .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #2a2a3e; font-size: 0.9rem; }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: #888; }
+  .info-value { color: #e0e0e0; font-weight: 500; }
+  .highlight { color: #6ee7b7; }
+  .schedule { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .schedule-item { background: #0f0f1a; border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; }
+  .schedule-item .label { color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .schedule-item .time { color: #fff; font-weight: 600; margin-top: 2px; }
+  .progress-bar { width: 100%; height: 6px; background: #2a2a3e; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #c4b5fd); border-radius: 3px; transition: width 1s; }
+  .day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+  .day-cell { text-align: center; padding: 6px 2px; border-radius: 6px; font-size: 0.75rem; }
+  .day-cell.weekend { background: #064e3b; color: #6ee7b7; }
+  .day-cell.weekday { background: #1e293b; color: #94a3b8; }
+  .day-cell.today { outline: 2px solid #c4b5fd; }
+  .day-cell.outside { opacity: 0.3; }
+  .day-header { font-size: 0.65rem; color: #666; text-transform: uppercase; text-align: center; padding: 4px 0; }
+  .note { font-size: 0.8rem; color: #888; margin-top: 12px; line-height: 1.4; }
+  .timeline { position: relative; height: 32px; background: #0f0f1a; border-radius: 6px; margin-top: 8px; overflow: hidden; }
+  .timeline-peak { position: absolute; top: 0; height: 100%; background: #7f1d1d44; border-left: 1px solid #7f1d1d; border-right: 1px solid #7f1d1d; }
+  .timeline-now { position: absolute; top: 0; width: 2px; height: 100%; background: #c4b5fd; z-index: 2; }
+  .timeline-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #666; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Claude March 2026 Usage Promotion</h1>
+  <p class="subtitle">13-27 March 2026 -- off-peak hours = x2 usage</p>
+
+  <div class="card">
+    <h2>Current status</h2>
+    <div id="status-badge" class="status-badge">...</div>
+    <div id="timer" class="timer"></div>
+    <div id="status-detail" style="font-size:0.85rem;color:#aaa;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Off-peak hours today (your timezone)</h2>
+    <div id="today-schedule" class="schedule"></div>
+    <div class="timeline" id="timeline"><div class="timeline-now" id="timeline-now"></div></div>
+    <div class="timeline-labels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Promotion period</h2>
+    <div id="promo-info"></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Calendar</h2>
+    <div class="day-grid" id="day-headers"></div>
+    <div class="day-grid" id="calendar"></div>
+    <div class="note" style="margin-top:8px;">
+      <span style="display:inline-block;width:10px;height:10px;background:#064e3b;border-radius:3px;vertical-align:middle;"></span> weekend (off-peak all day)
+      &nbsp;
+      <span style="display:inline-block;width:10px;height:10px;background:#1e293b;border-radius:3px;vertical-align:middle;"></span> weekday
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Details</h2>
+    <div class="info-row"><span class="info-label">Benefit</span><span class="info-value">x2 usage during off-peak</span></div>
+    <div class="info-row"><span class="info-label">Peak hours (ET)</span><span class="info-value">08:00-14:00</span></div>
+    <div class="info-row"><span class="info-label">Weekends</span><span class="info-value highlight">Off-peak all day</span></div>
+    <div class="info-row"><span class="info-label">Plans</span><span class="info-value">Free, Pro, Max, Team</span></div>
+    <div class="info-row"><span class="info-label">Products</span><span class="info-value">Web, Desktop, Mobile, Code, Excel, PPT</span></div>
+    <div class="info-row"><span class="info-label">Bonus vs weekly limit</span><span class="info-value highlight">Does not count</span></div>
+    <div class="info-row"><span class="info-label">Your timezone</span><span class="info-value" id="tz-name">...</span></div>
+  </div>
+</div>
+
+<script>
+// peak hours in ET: 08:00-14:00 (America/New_York)
+const PROMO_START = new Date("2026-03-13T00:00:00-05:00"); // ET
+const PROMO_END   = new Date("2026-03-28T00:00:00-04:00"); // after March 27 EDT
+const PEAK_START_ET = 8;  // 08:00 ET
+const PEAK_END_ET   = 14; // 14:00 ET
+
+const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+document.getElementById("tz-name").textContent = tz;
+
+function etToLocal(hour) {
+  // create a date in ET with that hour, convert to local
+  const d = new Date();
+  const etStr = d.toLocaleDateString("en-US", { timeZone: "America/New_York" });
+  const [m, day, y] = etStr.split("/");
+  const et = new Date(`${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}T${String(hour).padStart(2,"0")}:00:00`);
+  // figure out ET offset right now
+  const etOffset = getTimezoneOffset("America/New_York", d);
+  const utc = new Date(et.getTime() + etOffset * 60000);
+  // convert utc to local
+  const localOffset = d.getTimezoneOffset();
+  const local = new Date(utc.getTime() - localOffset * 60000);
+  return local.getHours() + local.getMinutes() / 60;
+}
+
+function getTimezoneOffset(tz, date) {
+  const utcStr = date.toLocaleString("en-US", { timeZone: "UTC" });
+  const tzStr  = date.toLocaleString("en-US", { timeZone: tz });
+  return (new Date(utcStr) - new Date(tzStr)) / 60000;
+}
+
+function isWeekend(date) {
+  const d = date.getDay();
+  return d === 0 || d === 6;
+}
+
+function isPeakNow(now) {
+  if (isWeekend(now)) return false;
+  // get current hour in ET
+  const etStr = now.toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
+  const [h, m] = etStr.split(":").map(Number);
+  const etHour = h + m / 60;
+  return etHour >= PEAK_START_ET && etHour < PEAK_END_ET;
+}
+
+function isPromoActive(now) {
+  return now >= PROMO_START && now < PROMO_END;
+}
+
+function fmt(n) { return String(Math.floor(n)).padStart(2, "0"); }
+function fmtTime(h) { return fmt(h) + ":" + fmt((h % 1) * 60); }
+
+function fmtCountdown(ms) {
+  if (ms <= 0) return "00:00:00";
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return fmt(h) + ":" + fmt(m) + ":" + fmt(sec);
+}
+
+function renderSchedule() {
+  const now = new Date();
+  const localPeakStart = etToLocal(PEAK_START_ET);
+  const localPeakEnd   = etToLocal(PEAK_END_ET);
+  const el = document.getElementById("today-schedule");
+
+  if (isWeekend(now)) {
+    el.innerHTML = '<div class="schedule-item" style="grid-column:span 2;text-align:center;"><div class="label">weekend</div><div class="time" style="color:#6ee7b7;">Off-peak all day (00:00-24:00)</div></div>';
+  } else {
+    const s1 = fmtTime(0), e1 = fmtTime(localPeakStart);
+    const s2 = fmtTime(localPeakEnd), e2 = "24:00";
+    const ps = fmtTime(localPeakStart), pe = fmtTime(localPeakEnd);
+    el.innerHTML =
+      '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + s1 + ' - ' + e1 + '</div></div>' +
+      '<div class="schedule-item"><div class="label">peak</div><div class="time" style="color:#fca5a5;">' + ps + ' - ' + pe + '</div></div>' +
+      '<div class="schedule-item"><div class="label">off-peak</div><div class="time" style="color:#6ee7b7;">' + s2 + ' - ' + e2 + '</div></div>';
+  }
+
+  // timeline bar
+  if (!isWeekend(now)) {
+    const tl = document.getElementById("timeline");
+    const left = (localPeakStart / 24) * 100;
+    const width = ((localPeakEnd - localPeakStart) / 24) * 100;
+    const existing = tl.querySelector(".timeline-peak");
+    if (existing) existing.remove();
+    const div = document.createElement("div");
+    div.className = "timeline-peak";
+    div.style.left = left + "%";
+    div.style.width = width + "%";
+    tl.insertBefore(div, tl.firstChild);
+  }
+}
+
+function renderCalendar() {
+  const headers = document.getElementById("day-headers");
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  headers.innerHTML = days.map(d => '<div class="day-header">' + d + '</div>').join("");
+
+  const cal = document.getElementById("calendar");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // March 2026 starts on Sunday (day 0)
+  // first day of grid: Monday March 9 (to show full weeks covering 13-27)
+  const startGrid = new Date(2026, 2, 9);
+  const endGrid   = new Date(2026, 2, 30); // show through March 29
+
+  let html = "";
+  const d = new Date(startGrid);
+  while (d < endGrid) {
+    const inPromo = d >= new Date(2026, 2, 13) && d <= new Date(2026, 2, 27);
+    const we = isWeekend(d);
+    const isToday = d.getTime() === today.getTime();
+    let cls = "day-cell";
+    if (!inPromo) cls += " outside";
+    else if (we) cls += " weekend";
+    else cls += " weekday";
+    if (isToday) cls += " today";
+    html += '<div class="' + cls + '">' + d.getDate() + '</div>';
+    d.setDate(d.getDate() + 1);
+  }
+  cal.innerHTML = html;
+}
+
+function update() {
+  const now = new Date();
+  const badge = document.getElementById("status-badge");
+  const timer = document.getElementById("timer");
+  const detail = document.getElementById("status-detail");
+
+  if (now < PROMO_START) {
+    badge.className = "status-badge status-not-started";
+    badge.textContent = "Not started yet";
+    timer.textContent = fmtCountdown(PROMO_START - now);
+    detail.textContent = "Until promotion starts";
+  } else if (now >= PROMO_END) {
+    badge.className = "status-badge status-ended";
+    badge.textContent = "Ended";
+    timer.textContent = "";
+    detail.textContent = "Promotion ended March 27, 2026";
+  } else if (isPeakNow(now)) {
+    badge.className = "status-badge status-peak";
+    badge.textContent = "Peak hours (standard limits)";
+    // time until peak ends
+    const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+    const peakEndToday = new Date(etNow);
+    peakEndToday.setHours(PEAK_END_ET, 0, 0, 0);
+    const diff = peakEndToday - etNow;
+    timer.textContent = fmtCountdown(diff > 0 ? diff : 0);
+    detail.textContent = "Until off-peak begins";
+  } else {
+    badge.className = "status-badge status-off-peak";
+    badge.textContent = "Off-peak (x2 usage!)";
+    if (isWeekend(now)) {
+      // time until Monday 08:00 ET
+      const dayOfWeek = now.getDay(); // 0=Sun, 6=Sat
+      let daysUntilMon = dayOfWeek === 6 ? 2 : 1;
+      const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const nextMon = new Date(etNow);
+      nextMon.setDate(nextMon.getDate() + daysUntilMon);
+      nextMon.setHours(PEAK_START_ET, 0, 0, 0);
+      const diff = nextMon - etNow;
+      timer.textContent = fmtCountdown(diff > 0 ? diff : 0);
+      detail.textContent = "Off-peak until Monday";
+    } else {
+      // next peak is today at 08:00 ET or tomorrow
+      const etNow = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const etH = etNow.getHours() + etNow.getMinutes() / 60;
+      let target;
+      if (etH < PEAK_START_ET) {
+        target = new Date(etNow);
+        target.setHours(PEAK_START_ET, 0, 0, 0);
+      } else {
+        // after peak ended, off-peak until next day 08:00 or weekend
+        target = new Date(etNow);
+        target.setDate(target.getDate() + 1);
+        if (target.getDay() === 6) {
+          // next peak is Monday
+          target.setDate(target.getDate() + 2);
+        }
+        target.setHours(PEAK_START_ET, 0, 0, 0);
+      }
+      const diff = target - etNow;
+      timer.textContent = fmtCountdown(diff > 0 ? diff : 0);
+      detail.textContent = "Until peak hours";
+    }
+  }
+
+  // timeline now marker
+  const nowH = now.getHours() + now.getMinutes() / 60;
+  document.getElementById("timeline-now").style.left = (nowH / 24 * 100) + "%";
+
+  // progress
+  if (now >= PROMO_START && now < PROMO_END) {
+    const pct = ((now - PROMO_START) / (PROMO_END - PROMO_START)) * 100;
+    document.getElementById("progress-fill").style.width = pct + "%";
+  } else if (now >= PROMO_END) {
+    document.getElementById("progress-fill").style.width = "100%";
+  }
+
+  // promo info
+  const promoInfo = document.getElementById("promo-info");
+  const startLocal = PROMO_START.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  const endLocal   = new Date(PROMO_END - 1).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  const totalDays = Math.round((PROMO_END - PROMO_START) / 86400000);
+  const elapsed   = Math.max(0, Math.min(totalDays, Math.floor((now - PROMO_START) / 86400000)));
+  promoInfo.innerHTML =
+    '<div class="info-row"><span class="info-label">Start</span><span class="info-value">' + startLocal + '</span></div>' +
+    '<div class="info-row"><span class="info-label">End</span><span class="info-value">' + endLocal + '</span></div>' +
+    '<div class="info-row"><span class="info-label">Progress</span><span class="info-value">' + elapsed + ' / ' + totalDays + ' days</span></div>';
+}
+
+renderSchedule();
+renderCalendar();
+update();
+setInterval(update, 1000);
+</script>
+</body>
+</html>
