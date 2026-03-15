@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Usage Promotion - March 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #000000;
+    --surface: #1d1d1f;
+    --surface-2: #2d2d2f;
+    --text: #f5f5f7;
+    --text-secondary: #86868b;
+    --accent: #bf5af2;
+    --accent-2: #5e5ce6;
+    --green: #30d158;
+    --green-dim: rgba(48, 209, 88, 0.12);
+    --red: #ff453a;
+    --red-dim: rgba(255, 69, 58, 0.12);
+    --blue: #0a84ff;
+    --border: rgba(255, 255, 255, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 80px 24px 60px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    background: linear-gradient(135deg, #f5f5f7 0%, #a1a1a6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* status card */
+  .status-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(191, 90, 242, 0.4), transparent);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .status-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .status-pill.off-peak { background: var(--green-dim); color: var(--green); }
+  .status-pill.off-peak .dot { background: var(--green); }
+  .status-pill.peak { background: var(--red-dim); color: var(--red); }
+  .status-pill.peak .dot { background: var(--red); animation: none; }
+  .status-pill.ended { background: rgba(142, 142, 147, 0.12); color: #8e8e93; }
+  .status-pill.ended .dot { background: #8e8e93; animation: none; }
+  .status-pill.waiting { background: rgba(10, 132, 255, 0.12); color: var(--blue); }
+  .status-pill.waiting .dot { background: var(--blue); }
+
+  .countdown {
+    font-size: clamp(2.8rem, 8vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .countdown-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* sections */
+  .section {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  /* schedule */
+  .schedule-grid {
+    display: flex;
+    gap: 12px;
+  }
+
+  .schedule-block {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  .schedule-block:hover { background: rgba(255, 255, 255, 0.06); }
+
+  .schedule-block .type {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .schedule-block .type.off { color: var(--green); }
+  .schedule-block .type.on { color: var(--red); }
+
+  .schedule-block .hours {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .schedule-weekend {
+    text-align: center;
+    padding: 24px;
+    background: var(--green-dim);
+    border-radius: 14px;
+  }
+
+  .schedule-weekend .icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .schedule-weekend .label { font-size: 1rem; font-weight: 600; color: var(--green); }
+  .schedule-weekend .sublabel { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+
+  /* timeline */
+  .timeline-wrap { margin-top: 20px; }
+
+  .timeline-bar {
+    position: relative;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .timeline-peak-seg {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255, 69, 58, 0.3), rgba(255, 69, 58, 0.5));
+    border-radius: 4px;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    top: -3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text);
+    box-shadow: 0 0 0 3px var(--bg), 0 0 12px rgba(255, 255, 255, 0.3);
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: left 1s linear;
+  }
+
+  .timeline-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* progress */
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .progress-dates {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .progress-pct {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    border-radius: 3px;
+    transition: width 1s;
+  }
+
+  /* calendar */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .cal-header {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 4px 0 8px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+
+  .cal-day.in-promo { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+  .cal-day.weekend-day { color: var(--green); background: var(--green-dim); }
+  .cal-day.today { background: var(--accent); color: #fff; font-weight: 700; }
+  .cal-day.outside { opacity: 0.25; }
+
+  .cal-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    justify-content: center;
+  }
+
+  .cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .cal-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  /* details */
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+
+  .detail-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .detail-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    text-align: right;
+  }
+
+  .detail-value.green { color: var(--green); }
+
+  .source-link {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+  }
+
+  .source-link a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .source-link a:hover { text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    .hero { padding: 48px 20px 40px; }
+    .container { padding: 0 16px 60px; }
+    .status-card, .section { padding: 24px; border-radius: 16px; }
+    .schedule-grid { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Limited Time</div>
+  <h1>Double your Claude usage.</h1>
+  <p>Your five-hour usage is doubled during off-peak hours. March 13 through 27, 2026.</p>
+</div>
+
+<div class="container">
+
+  <div class="status-card">
+    <div class="status-pill" id="status-pill">
+      <span class="dot"></span>
+      <span id="status-text">...</span>
+    </div>
+    <div class="countdown" id="countdown"></div>
+    <div class="countdown-label" id="countdown-label"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Today's schedule</div>
+    <div id="schedule"></div>
+    <div class="timeline-wrap" id="timeline-wrap">
+      <div class="timeline-bar" id="timeline-bar">
+        <div class="timeline-marker" id="timeline-marker"></div>
+      </div>
+      <div class="timeline-ticks">
+        <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Promotion period</div>
+    <div class="progress-row">
+      <span class="progress-dates">Mar 13 - Mar 27</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Calendar</div>
+    <div class="cal-grid" id="cal-headers"></div>
+    <div class="cal-grid" id="calendar"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green-dim);border:1px solid rgba(48,209,88,0.3);"></div>Weekend (all-day off-peak)</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);"></div>Weekday</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Details</div>
+    <div class="detail-row"><span class="detail-label">Benefit</span><span class="detail-value">Five-hour usage doubled</span></div>
+    <div class="detail-row"><span class="detail-label">Peak hours</span><span class="detail-value">8 AM - 2 PM ET / 5 - 11 AM PT</span></div>
+    <div class="detail-row"><span class="detail-label">Weekends</span><span class="detail-value green">Off-peak all day</span></div>
+    <div class="detail-row"><span class="detail-label">Eligible plans</span><span class="detail-value">Free, Pro, Max, Team (not Enterprise)</span></div>
+    <div class="detail-row"><span class="detail-label">Products</span><span class="detail-value">Web, Desktop, Mobile, Cowork, Code, Excel, PPT</span></div>
+    <div class="detail-row"><span class="detail-label">Bonus vs weekly limit</span><span class="detail-value green">Does not count</span></div>
+    <div class="detail-row"><span class="detail-label">Enrollment</span><span class="detail-value">Automatic</span></div>
+    <div class="detail-row"><span class="detail-label">After promotion</span><span class="detail-value">Standard limits resume</span></div>
+    <div class="detail-row"><span class="detail-label">Your timezone</span><span class="detail-value" id="tz-name">...</span></div>
+  </div>
+
+  <div class="source-link">
+    <a href="https://support.claude.com/en/articles/14063676-claude-march-2026-usage-promotion" target="_blank">View official announcement &#8599;</a>
+  </div>
+
+</div>
+
+<script>
+const PROMO_START = new Date("2026-03-13T00:00:00-04:00");
+const PROMO_END   = new Date("2026-03-28T00:00:00-04:00");
+const PEAK_START_ET = 8;
+const PEAK_END_ET   = 14;
+
+document.getElementById("tz-name").textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+function getTimezoneOffset(tz, date) {
+  const u = date.toLocaleString("en-US", { timeZone: "UTC" });
+  const t = date.toLocaleString("en-US", { timeZone: tz });
+  return (new Date(u) - new Date(t)) / 60000;
+}
+
+function etToLocal(hour) {
+  const d = new Date();
+  const etStr = d.toLocaleDateString("en-US", { timeZone: "America/New_York" });
+  const [m, day, y] = etStr.split("/");
+  const et = new Date(`${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}T${String(hour).padStart(2,"0")}:00:00`);
+  const etOff = getTimezoneOffset("America/New_York", d);
+  const utc = new Date(et.getTime() + etOff * 60000);
+  const local = new Date(utc.getTime() - d.getTimezoneOffset() * 60000);
+  return local.getHours() + local.getMinutes() / 60;
+}
+
+function isWeekendET(date) {
+  const d = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" })).getDay();
+  return d === 0 || d === 6;
+}
+
+function getETHour(now) {
+  const p = now.toLocaleString("en-US", { timeZone: "America/New_York", hourCycle: "h23", hour: "2-digit", minute: "2-digit" }).split(":");
+  return parseInt(p[0], 10) + parseInt(p[1], 10) / 60;
+}
+
+function isPeakNow(now) {
+  if (isWeekendET(now)) return false;
+  const h = getETHour(now);
+  return h >= PEAK_START_ET && h < PEAK_END_ET;
+}
+
+function fmt(n) { return String(Math.floor(n)).padStart(2, "0"); }
+function fmtH(h) { const w = ((h % 24) + 24) % 24; return fmt(w) + ":" + fmt((w % 1) * 60); }
+
+function fmtCountdown(ms) {
+  if (ms <= 0 || isNaN(ms)) return "00:00:00";
+  const s = Math.floor(ms / 1000);
+  return fmt(Math.floor(s / 3600)) + ":" + fmt(Math.floor((s % 3600) / 60)) + ":" + fmt(s % 60);
+}
+
+function getETNow(now) { return new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" })); }
+
+function renderSchedule() {
+  const now = new Date();
+  const el = document.getElementById("schedule");
+
+  if (isWeekendET(now)) {
+    el.innerHTML = '<div class="schedule-weekend"><div class="label">Off-peak all day</div><div class="sublabel">Weekend -- your usage is doubled around the clock</div></div>';
+    return;
+  }
+
+  const ps = etToLocal(PEAK_START_ET), pe = etToLocal(PEAK_END_ET);
+  const cross = ps > pe;
+
+  if (cross) {
+    el.innerHTML = '<div class="schedule-grid">' +
+      '<div class="schedule-block"><div class="type off">Off-peak</div><div class="hours">' + fmtH(pe) + ' - ' + fmtH(ps) + '</div></div>' +
+      '<div class="schedule-block"><div class="type on">Peak</div><div class="hours">' + fmtH(ps) + ' - ' + fmtH(pe) + ' +1d</div></div>' +
+      '</div>';
+  } else {
+    el.innerHTML = '<div class="schedule-grid">' +
+      '<div class="schedule-block"><div class="type off">Off-peak</div><div class="hours">' + fmtH(0) + ' - ' + fmtH(ps) + '</div></div>' +
+      '<div class="schedule-block"><div class="type on">Peak</div><div class="hours">' + fmtH(ps) + ' - ' + fmtH(pe) + '</div></div>' +
+      '<div class="schedule-block"><div class="type off">Off-peak</div><div class="hours">' + fmtH(pe) + ' - 24:00</div></div>' +
+      '</div>';
+  }
+
+  // timeline
+  const bar = document.getElementById("timeline-bar");
+  bar.querySelectorAll(".timeline-peak-seg").forEach(e => e.remove());
+  if (cross) {
+    addPeakSeg(bar, ps, 24);
+    addPeakSeg(bar, 0, pe);
+  } else {
+    addPeakSeg(bar, ps, pe);
+  }
+}
+
+function addPeakSeg(bar, from, to) {
+  const seg = document.createElement("div");
+  seg.className = "timeline-peak-seg";
+  seg.style.left = (from / 24 * 100) + "%";
+  seg.style.width = ((to - from) / 24 * 100) + "%";
+  bar.appendChild(seg);
+}
+
+function renderCalendar() {
+  const hdr = document.getElementById("cal-headers");
+  hdr.innerHTML = ["M","T","W","T","F","S","S"].map(d => '<div class="cal-header">' + d + '</div>').join("");
+
+  const cal = document.getElementById("calendar");
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(2026, 2, 9), end = new Date(2026, 2, 30);
+  let html = "";
+  const d = new Date(start);
+  while (d < end) {
+    const inPromo = d >= new Date(2026,2,13) && d <= new Date(2026,2,27);
+    const we = d.getDay() === 0 || d.getDay() === 6;
+    const isToday = d.getTime() === today.getTime();
+    let cls = "cal-day";
+    if (!inPromo) cls += " outside";
+    else if (isToday) cls += " today";
+    else if (we) cls += " weekend-day";
+    else cls += " in-promo";
+    html += '<div class="' + cls + '">' + d.getDate() + '</div>';
+    d.setDate(d.getDate() + 1);
+  }
+  cal.innerHTML = html;
+}
+
+function update() {
+  const now = new Date();
+  const pill = document.getElementById("status-pill");
+  const text = document.getElementById("status-text");
+  const cd = document.getElementById("countdown");
+  const cdl = document.getElementById("countdown-label");
+
+  if (now < PROMO_START) {
+    pill.className = "status-pill waiting";
+    text.textContent = "Starting soon";
+    cd.textContent = fmtCountdown(PROMO_START - now);
+    cdl.textContent = "until promotion begins";
+  } else if (now >= PROMO_END) {
+    pill.className = "status-pill ended";
+    text.textContent = "Promotion ended";
+    cd.textContent = "--";
+    cdl.textContent = "Limits are back to standard";
+  } else if (isPeakNow(now)) {
+    pill.className = "status-pill peak";
+    text.textContent = "Peak hours";
+    const etNow = getETNow(now), t = new Date(etNow);
+    t.setHours(PEAK_END_ET, 0, 0, 0);
+    cd.textContent = fmtCountdown(t - etNow);
+    cdl.textContent = "until off-peak begins";
+  } else {
+    pill.className = "status-pill off-peak";
+    text.textContent = "Off-peak -- 2x usage active";
+    const etNow = getETNow(now);
+    const etDay = etNow.getDay();
+
+    if (isWeekendET(now)) {
+      const add = etDay === 6 ? 2 : 1;
+      const t = new Date(etNow);
+      t.setDate(t.getDate() + add);
+      t.setHours(PEAK_START_ET, 0, 0, 0);
+      cd.textContent = fmtCountdown(t - etNow);
+      cdl.textContent = "off-peak until Monday";
+    } else {
+      const etH = etNow.getHours() + etNow.getMinutes() / 60;
+      let t;
+      if (etH < PEAK_START_ET) {
+        t = new Date(etNow);
+        t.setHours(PEAK_START_ET, 0, 0, 0);
+      } else {
+        t = new Date(etNow);
+        t.setDate(t.getDate() + 1);
+        const td = t.getDay();
+        if (td === 6) t.setDate(t.getDate() + 2);
+        else if (td === 0) t.setDate(t.getDate() + 1);
+        t.setHours(PEAK_START_ET, 0, 0, 0);
+      }
+      cd.textContent = fmtCountdown(t - etNow);
+      cdl.textContent = "until next peak";
+    }
+  }
+
+  // timeline marker
+  const nh = now.getHours() + now.getMinutes() / 60;
+  document.getElementById("timeline-marker").style.left = (nh / 24 * 100) + "%";
+
+  // progress
+  if (now >= PROMO_START && now < PROMO_END) {
+    const pct = ((now - PROMO_START) / (PROMO_END - PROMO_START)) * 100;
+    document.getElementById("progress-fill").style.width = pct + "%";
+    document.getElementById("progress-pct").textContent = Math.round(pct) + "%";
+  } else if (now >= PROMO_END) {
+    document.getElementById("progress-fill").style.width = "100%";
+    document.getElementById("progress-pct").textContent = "100%";
+  }
+}
+
+renderSchedule();
+renderCalendar();
+update();
+setInterval(update, 1000);
+</script>
+</body>
+</html>
