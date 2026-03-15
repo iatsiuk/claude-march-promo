@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude March 2026 Usage Promotion</title>
+<style>
+  :root {
+    --bg: #323a43;
+    --surface: #434c56;
+    --dark: #23262a;
+    --accent: #82c6f0;
+    --accent-hover: #6bbced;
+    --accent-bright: #279de5;
+    --green: #7ec87e;
+    --red: #e07070;
+    --text: #ced4da;
+    --text-bright: #f8f9fa;
+    --text-dim: #9da4ab;
+    --border: rgba(255, 255, 255, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+  /* nav */
+  .nav {
+    background: var(--dark);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow-x: auto;
+  }
+
+  .nav-logo {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-bright);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo .t-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-bright);
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 900;
+    font-size: 0.9rem;
+  }
+
+  .nav a { color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+  .nav a:hover { color: var(--text-bright); text-decoration: none; }
+
+  /* layout */
+  .layout {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* header block */
+  .episode-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .episode-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+  }
+
+  .episode-number {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1;
+  }
+
+  .episode-meta {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  .episode-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+  }
+
+  .episode-desc {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  /* status block - styled like episode info */
+  .status-block {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot.off-peak { background: var(--green); animation: pulse 1.5s ease-in-out infinite; }
+  .status-dot.peak { background: var(--red); }
+  .status-dot.ended { background: var(--text-dim); }
+  .status-dot.waiting { background: var(--accent); animation: pulse 1.5s ease-in-out infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .status-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .timer-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .timer-value {
+    font-size: 2.4rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+    color: var(--text-bright);
+  }
+
+  .timer-hint {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  /* topics list - like podcast timestamps */
+  .topics {
+    margin-bottom: 16px;
+  }
+
+  .topic-row {
+    display: flex;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .topic-row:last-child { border-bottom: none; }
+
+  .topic-time {
+    width: 100px;
+    flex-shrink: 0;
+    font-family: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+  .topic-label {
+    color: var(--text-dim);
+    flex-shrink: 0;
+    width: 140px;
+  }
+
+  .topic-value {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .topic-value.green { color: var(--green); }
+
+  /* schedule as timestamps */
+  .sched-section {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .sched-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .sched-items {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sched-item {
+    flex: 1;
+    background: var(--dark);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .sched-item .type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .sched-item .type.off { color: var(--green); }
+  .sched-item .type.on { color: var(--red); }
+
+  .sched-item .hours {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    font-family: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+  }
+
+  .sched-weekend {
+    background: var(--dark);
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .sched-weekend .main { color: var(--green); font-weight: 700; font-size: 0.95rem; }
+  .sched-weekend .sub { color: var(--text-dim); font-size: 0.8rem; margin-top: 4px; }
+
+  /* timeline */
+  .tl-bar {
+    position: relative;
+    height: 4px;
+    background: var(--dark);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: visible;
+  }
+
+  .tl-peak { position: absolute; top: 0; height: 100%; background: rgba(224, 112, 112, 0.25); border-radius: 2px; }
+
+  .tl-now {
+    position: absolute;
+    top: -4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-bright);
+    border: 2px solid var(--surface);
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: left 1s linear;
+  }
+
+  .tl-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    font-family: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+  }
+
+  /* progress */
+  .prog-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+
+  .prog-dates { color: var(--text-dim); }
+  .prog-pct { color: var(--accent); font-weight: 700; font-family: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace; }
+
+  .prog-track { height: 4px; background: var(--dark); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--accent-bright); border-radius: 2px; transition: width 1s; }
+
+  /* calendar */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-hdr {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 2px 0 6px;
+    text-transform: uppercase;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dim);
+  }
+
+  .cal-day.promo { color: var(--text); background: var(--dark); }
+  .cal-day.we { color: var(--green); background: rgba(126, 200, 126, 0.1); }
+  .cal-day.today { background: var(--accent-bright); color: #fff; font-weight: 700; }
+  .cal-day.out { opacity: 0.2; }
+
+  .cal-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .cal-legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  .footer-link {
+    text-align: center;
+    padding: 16px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 520px) {
+    .layout { padding: 20px 16px 60px; }
+    .episode-number { font-size: 3rem; }
+    .sched-items { flex-direction: column; }
+    .topic-time { width: 70px; }
+    .topic-label { width: 110px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-logo"><span class="t-badge">C</span> Claude Promo</div>
+  <a href="#status">Status</a>
+  <a href="#schedule">Schedule</a>
+  <a href="#details">Details</a>
+  <a href="https://support.claude.com/en/articles/14063676-claude-march-2026-usage-promotion" target="_blank">Source</a>
+</div>
+
+<div class="layout">
+
+  <div class="episode-label">Claude March 2026</div>
+  <div class="episode-header">
+    <div class="episode-number">x2</div>
+  </div>
+  <div class="episode-title">Usage Promotion</div>
+  <div class="episode-desc">Five-hour usage doubled during off-peak hours. Free, Pro, Max, and Team plans. No action required, automatic enrollment. March 13-27, 2026.</div>
+
+  <div class="status-block" id="status">
+    <div class="status-row">
+      <div class="status-dot" id="s-dot"></div>
+      <div class="status-label" id="s-label">...</div>
+    </div>
+    <div class="timer-row">
+      <div class="timer-value" id="s-timer"></div>
+      <div class="timer-hint" id="s-hint"></div>
+    </div>
+  </div>
+
+  <div class="sched-section" id="schedule">
+    <div class="sched-title">Today's schedule (your timezone)</div>
+    <div id="sched"></div>
+    <div class="tl-bar" id="tl-bar"><div class="tl-now" id="tl-now"></div></div>
+    <div class="tl-ticks"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+  </div>
+
+  <div class="sched-section">
+    <div class="sched-title">Promotion period</div>
+    <div class="prog-row">
+      <span class="prog-dates">Mar 13 -- Mar 27, 2026</span>
+      <span class="prog-pct" id="p-pct">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="p-fill"></div></div>
+  </div>
+
+  <div class="sched-section">
+    <div class="sched-title">Calendar</div>
+    <div class="cal-grid" id="cal-hdr"></div>
+    <div class="cal-grid" id="cal"></div>
+    <div class="cal-legend">
+      <span><span class="cal-legend-dot" style="background:rgba(126,200,126,.1);border:1px solid rgba(126,200,126,.2);"></span>weekend (off-peak 24h)</span>
+      <span><span class="cal-legend-dot" style="background:var(--dark);"></span>weekday</span>
+    </div>
+  </div>
+
+  <div class="sched-section" id="details">
+    <div class="sched-title">Details</div>
+    <div class="topics">
+      <div class="topic-row"><span class="topic-label">Benefit</span><span class="topic-value green">Five-hour usage doubled</span></div>
+      <div class="topic-row"><span class="topic-label">Peak hours</span><span class="topic-value">8 AM -- 2 PM ET / 5 -- 11 AM PT</span></div>
+      <div class="topic-row"><span class="topic-label">Weekends</span><span class="topic-value green">Off-peak all day</span></div>
+      <div class="topic-row"><span class="topic-label">Plans</span><span class="topic-value">Free, Pro, Max, Team (not Enterprise)</span></div>
+      <div class="topic-row"><span class="topic-label">Products</span><span class="topic-value">Web, Desktop, Mobile, Cowork, Code, Excel, PPT</span></div>
+      <div class="topic-row"><span class="topic-label">Weekly limit</span><span class="topic-value green">Bonus does not count</span></div>
+      <div class="topic-row"><span class="topic-label">Enrollment</span><span class="topic-value">Automatic</span></div>
+      <div class="topic-row"><span class="topic-label">After promo</span><span class="topic-value">Standard limits resume</span></div>
+      <div class="topic-row"><span class="topic-label">Your timezone</span><span class="topic-value" id="tz">...</span></div>
+    </div>
+  </div>
+
+  <div class="footer-link">
+    <a href="https://support.claude.com/en/articles/14063676-claude-march-2026-usage-promotion" target="_blank">Official announcement &#8599;</a>
+  </div>
+
+</div>
+
+<script>
+const PROMO_START=new Date("2026-03-13T00:00:00-04:00"),PROMO_END=new Date("2026-03-28T00:00:00-04:00"),PS=8,PE=14;
+document.getElementById("tz").textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;
+function tzOff(z,d){const u=d.toLocaleString("en-US",{timeZone:"UTC"}),t=d.toLocaleString("en-US",{timeZone:z});return(new Date(u)-new Date(t))/6e4}
+function etToL(h){const d=new Date(),s=d.toLocaleDateString("en-US",{timeZone:"America/New_York"}),[m,dy,y]=s.split("/"),et=new Date(`${y}-${m.padStart(2,"0")}-${dy.padStart(2,"0")}T${String(h).padStart(2,"0")}:00:00`),o=tzOff("America/New_York",d),u=new Date(et.getTime()+o*6e4),l=new Date(u.getTime()-d.getTimezoneOffset()*6e4);return l.getHours()+l.getMinutes()/60}
+function isWeET(d){return[0,6].includes(new Date(d.toLocaleString("en-US",{timeZone:"America/New_York"})).getDay())}
+function getETH(d){const p=d.toLocaleString("en-US",{timeZone:"America/New_York",hourCycle:"h23",hour:"2-digit",minute:"2-digit"}).split(":");return parseInt(p[0],10)+parseInt(p[1],10)/60}
+function isPk(d){return!isWeET(d)&&getETH(d)>=PS&&getETH(d)<PE}
+function fm(n){return String(Math.floor(n)).padStart(2,"0")}
+function fH(h){const w=((h%24)+24)%24;return fm(w)+":"+fm((w%1)*60)}
+function fCD(ms){if(ms<=0||isNaN(ms))return"00:00:00";const s=Math.floor(ms/1000);return fm(Math.floor(s/3600))+":"+fm(Math.floor(s%3600/60))+":"+fm(s%60)}
+function etN(d){return new Date(d.toLocaleString("en-US",{timeZone:"America/New_York"}))}
+
+function renderSched(){
+  const now=new Date(),el=document.getElementById("sched");
+  if(isWeET(now)){el.innerHTML='<div class="sched-weekend"><div class="main">Off-peak all day</div><div class="sub">Weekend -- usage doubled around the clock</div></div>';return}
+  const ps=etToL(PS),pe=etToL(PE),cr=ps>pe;
+  if(cr){el.innerHTML='<div class="sched-items"><div class="sched-item"><div class="type off">Off-peak</div><div class="hours">'+fH(pe)+' -- '+fH(ps)+'</div></div><div class="sched-item"><div class="type on">Peak</div><div class="hours">'+fH(ps)+' -- '+fH(pe)+' +1d</div></div></div>'}
+  else{el.innerHTML='<div class="sched-items"><div class="sched-item"><div class="type off">Off-peak</div><div class="hours">'+fH(0)+' -- '+fH(ps)+'</div></div><div class="sched-item"><div class="type on">Peak</div><div class="hours">'+fH(ps)+' -- '+fH(pe)+'</div></div><div class="sched-item"><div class="type off">Off-peak</div><div class="hours">'+fH(pe)+' -- 24:00</div></div></div>'}
+  const bar=document.getElementById("tl-bar");bar.querySelectorAll(".tl-peak").forEach(e=>e.remove());
+  if(cr){addP(bar,ps,24);addP(bar,0,pe)}else{addP(bar,ps,pe)}
+}
+function addP(b,f,t){const s=document.createElement("div");s.className="tl-peak";s.style.left=(f/24*100)+"%";s.style.width=((t-f)/24*100)+"%";b.appendChild(s)}
+
+function renderCal(){
+  document.getElementById("cal-hdr").innerHTML=["Pn","Vt","Sr","Ch","Pt","Sb","Vs"].map(d=>'<div class="cal-hdr">'+d+'</div>').join("");
+  const c=document.getElementById("cal"),td=new Date();td.setHours(0,0,0,0);
+  const s=new Date(2026,2,9),e=new Date(2026,2,30);let h="";const d=new Date(s);
+  while(d<e){const inp=d>=new Date(2026,2,13)&&d<=new Date(2026,2,27),we=d.getDay()===0||d.getDay()===6,isT=d.getTime()===td.getTime();
+  let cl="cal-day";if(!inp)cl+=" out";else if(isT)cl+=" today";else if(we)cl+=" we";else cl+=" promo";
+  h+='<div class="'+cl+'">'+d.getDate()+'</div>';d.setDate(d.getDate()+1)}c.innerHTML=h;
+}
+
+function update(){
+  const now=new Date(),dot=document.getElementById("s-dot"),lbl=document.getElementById("s-label"),tmr=document.getElementById("s-timer"),hnt=document.getElementById("s-hint");
+  if(now<PROMO_START){dot.className="status-dot waiting";lbl.textContent="Starting soon";tmr.textContent=fCD(PROMO_START-now);hnt.textContent="until promotion begins"}
+  else if(now>=PROMO_END){dot.className="status-dot ended";lbl.textContent="Promotion ended";tmr.textContent="--:--:--";hnt.textContent="limits are back to standard"}
+  else if(isPk(now)){dot.className="status-dot peak";lbl.textContent="Peak hours (standard limits)";const en=etN(now),t=new Date(en);t.setHours(PE,0,0,0);tmr.textContent=fCD(t-en);hnt.textContent="until off-peak begins"}
+  else{dot.className="status-dot off-peak";lbl.textContent="Off-peak -- 2x usage active";const en=etN(now),ed=en.getDay();
+    if(isWeET(now)){const a=ed===6?2:1,t=new Date(en);t.setDate(t.getDate()+a);t.setHours(PS,0,0,0);tmr.textContent=fCD(t-en);hnt.textContent="off-peak until Monday"}
+    else{const eh=en.getHours()+en.getMinutes()/60;let t;if(eh<PS){t=new Date(en);t.setHours(PS,0,0,0)}else{t=new Date(en);t.setDate(t.getDate()+1);const td=t.getDay();if(td===6)t.setDate(t.getDate()+2);else if(td===0)t.setDate(t.getDate()+1);t.setHours(PS,0,0,0)}tmr.textContent=fCD(t-en);hnt.textContent="until next peak"}}
+  document.getElementById("tl-now").style.left=((now.getHours()+now.getMinutes()/60)/24*100)+"%";
+  if(now>=PROMO_START&&now<PROMO_END){const p=((now-PROMO_START)/(PROMO_END-PROMO_START))*100;document.getElementById("p-fill").style.width=p+"%";document.getElementById("p-pct").textContent=Math.round(p)+"%"}
+  else if(now>=PROMO_END){document.getElementById("p-fill").style.width="100%";document.getElementById("p-pct").textContent="100%"}
+}
+
+renderSched();renderCal();update();setInterval(update,1000);
+</script>
+</body>
+</html>
