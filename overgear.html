@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude March 2026 Usage Promotion</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050622;
+    --surface: #1e2242;
+    --surface-2: #293054;
+    --primary: #564fff;
+    --primary-hover: #6951f9;
+    --green: #96d473;
+    --green-dim: rgba(150, 212, 115, 0.12);
+    --orange: #ff9548;
+    --orange-dim: rgba(255, 149, 72, 0.12);
+    --red: #ff5a5a;
+    --red-dim: rgba(255, 90, 90, 0.1);
+    --text: #ffffff;
+    --text-2: #a7a7c8;
+    --text-3: #676b8b;
+    --border: rgba(86, 79, 255, 0.15);
+    --border-2: rgba(167, 167, 200, 0.1);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* decorative dot grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 120px;
+    left: -20px;
+    width: 140px;
+    height: 200px;
+    background-image: radial-gradient(circle, var(--primary) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 70px 24px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(86, 79, 255, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--orange-dim);
+    color: var(--orange);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 7px 16px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5.5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .hero h1 .accent { color: var(--primary); }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text-2);
+    font-weight: 500;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* status card */
+  .status-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--green));
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+  }
+
+  .status-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-pill.off-peak { background: var(--green-dim); color: var(--green); }
+  .status-pill.off-peak .dot { background: var(--green); animation: blink 1.5s ease-in-out infinite; }
+  .status-pill.peak { background: var(--red-dim); color: var(--red); }
+  .status-pill.peak .dot { background: var(--red); }
+  .status-pill.ended { background: var(--border-2); color: var(--text-3); }
+  .status-pill.ended .dot { background: var(--text-3); }
+  .status-pill.waiting { background: rgba(86, 79, 255, 0.12); color: var(--primary); }
+  .status-pill.waiting .dot { background: var(--primary); animation: blink 1.5s ease-in-out infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .countdown {
+    font-size: clamp(2.4rem, 7vw, 3.6rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 6px;
+  }
+
+  .countdown-label {
+    font-size: 0.85rem;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+
+  /* cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-2);
+  }
+
+  /* schedule */
+  .sched-grid {
+    display: flex;
+    gap: 10px;
+  }
+
+  .sched-block {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .sched-block:hover { border-color: var(--border); background: rgba(86, 79, 255, 0.04); }
+
+  .sched-type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .sched-type.off { color: var(--green); }
+  .sched-type.on { color: var(--red); }
+
+  .sched-hours {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .sched-weekend {
+    text-align: center;
+    padding: 20px;
+    background: var(--green-dim);
+    border: 1px solid rgba(150, 212, 115, 0.2);
+    border-radius: 10px;
+  }
+
+  .sched-weekend .main { font-size: 1rem; font-weight: 700; color: var(--green); }
+  .sched-weekend .sub { font-size: 0.8rem; color: var(--text-2); margin-top: 4px; }
+
+  /* timeline */
+  .tl-wrap { margin-top: 20px; }
+
+  .tl-bar {
+    position: relative;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: visible;
+  }
+
+  .tl-peak {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(255, 90, 90, 0.25);
+    border-radius: 3px;
+  }
+
+  .tl-now {
+    position: absolute;
+    top: -5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 10px rgba(86, 79, 255, 0.5);
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: left 1s linear;
+  }
+
+  .tl-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 0.6rem;
+    color: var(--text-3);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* progress */
+  .prog-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+  }
+
+  .prog-dates { color: var(--text-2); font-weight: 500; }
+  .prog-pct { color: var(--primary); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .prog-track {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    border-radius: 3px;
+    transition: width 1s;
+  }
+
+  /* calendar */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .cal-hdr {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    text-align: center;
+    padding: 4px 0 8px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-3);
+    transition: all 0.15s;
+  }
+
+  .cal-day.promo { color: var(--text-2); background: var(--bg); border: 1px solid var(--border-2); }
+  .cal-day.we { color: var(--green); background: var(--green-dim); border: 1px solid rgba(150,212,115,0.15); }
+  .cal-day.today { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
+  .cal-day.out { opacity: 0.2; }
+
+  .cal-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+    justify-content: center;
+  }
+
+  .cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-3);
+    font-weight: 600;
+  }
+
+  .cal-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+  }
+
+  /* details */
+  .det-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-2);
+  }
+
+  .det-row:last-child { border-bottom: none; }
+
+  .det-label { font-size: 0.85rem; color: var(--text-3); font-weight: 500; }
+
+  .det-value { font-size: 0.85rem; font-weight: 600; color: var(--text-2); text-align: right; }
+  .det-value.green { color: var(--green); }
+  .det-value.orange { color: var(--orange); }
+
+  .source {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.8rem;
+  }
+
+  .source a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .source a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+  /* cta button */
+  .cta {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-bottom: 16px;
+  }
+
+  .cta:hover { background: var(--primary-hover); }
+  .cta:active { transform: scale(0.99); }
+
+  @media (max-width: 520px) {
+    .hero { padding: 48px 20px 36px; }
+    .container { padding: 0 16px 60px; }
+    .status-card, .card { padding: 20px; }
+    .sched-grid { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">&#9889; Hot Offer!</div>
+  <h1>Double your <span class="accent">Claude usage</span><br>during off-peak hours</h1>
+  <p>Five-hour usage limit is doubled for Free, Pro, Max, and Team plans. March 13-27, 2026. No action required.</p>
+</div>
+
+<div class="container">
+
+  <div class="status-card">
+    <div class="status-pill" id="status-pill">
+      <span class="dot"></span>
+      <span id="status-text">...</span>
+    </div>
+    <div class="countdown" id="countdown"></div>
+    <div class="countdown-label" id="countdown-label"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Today's schedule</div>
+    <div id="schedule"></div>
+    <div class="tl-wrap" id="tl-wrap">
+      <div class="tl-bar" id="tl-bar">
+        <div class="tl-now" id="tl-now"></div>
+      </div>
+      <div class="tl-ticks">
+        <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Promotion period</div>
+    <div class="prog-row">
+      <span class="prog-dates">Mar 13 - Mar 27, 2026</span>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Calendar</div>
+    <div class="cal-grid" id="cal-hdr"></div>
+    <div class="cal-grid" id="cal"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green-dim);border:1px solid rgba(150,212,115,.2);"></div>Weekend (off-peak 24h)</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--bg);border:1px solid var(--border-2);"></div>Weekday</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Details</div>
+    <div class="det-row"><span class="det-label">Benefit</span><span class="det-value orange">Five-hour usage doubled</span></div>
+    <div class="det-row"><span class="det-label">Peak hours</span><span class="det-value">8 AM - 2 PM ET / 5 - 11 AM PT</span></div>
+    <div class="det-row"><span class="det-label">Weekends</span><span class="det-value green">Off-peak all day</span></div>
+    <div class="det-row"><span class="det-label">Eligible plans</span><span class="det-value">Free, Pro, Max, Team (not Enterprise)</span></div>
+    <div class="det-row"><span class="det-label">Products</span><span class="det-value">Web, Desktop, Mobile, Cowork, Code, Excel, PPT</span></div>
+    <div class="det-row"><span class="det-label">Bonus vs weekly limit</span><span class="det-value green">Does not count</span></div>
+    <div class="det-row"><span class="det-label">Enrollment</span><span class="det-value">Automatic</span></div>
+    <div class="det-row"><span class="det-label">After promotion</span><span class="det-value">Standard limits resume</span></div>
+    <div class="det-row"><span class="det-label">Your timezone</span><span class="det-value" id="tz-name">...</span></div>
+  </div>
+
+  <a class="cta" href="https://support.claude.com/en/articles/14063676-claude-march-2026-usage-promotion" target="_blank">View Official Announcement</a>
+
+</div>
+
+<script>
+const PROMO_START = new Date("2026-03-13T00:00:00-04:00");
+const PROMO_END   = new Date("2026-03-28T00:00:00-04:00");
+const PEAK_S = 8, PEAK_E = 14;
+
+document.getElementById("tz-name").textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+function tzOff(tz, d) {
+  const u = d.toLocaleString("en-US",{timeZone:"UTC"});
+  const t = d.toLocaleString("en-US",{timeZone:tz});
+  return (new Date(u)-new Date(t))/60000;
+}
+
+function etToLocal(h) {
+  const d=new Date(), s=d.toLocaleDateString("en-US",{timeZone:"America/New_York"});
+  const [m,day,y]=s.split("/");
+  const et=new Date(`${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}T${String(h).padStart(2,"0")}:00:00`);
+  const off=tzOff("America/New_York",d);
+  const utc=new Date(et.getTime()+off*60000);
+  const loc=new Date(utc.getTime()-d.getTimezoneOffset()*60000);
+  return loc.getHours()+loc.getMinutes()/60;
+}
+
+function isWeekendET(d){return[0,6].includes(new Date(d.toLocaleString("en-US",{timeZone:"America/New_York"})).getDay())}
+function getETH(d){const p=d.toLocaleString("en-US",{timeZone:"America/New_York",hourCycle:"h23",hour:"2-digit",minute:"2-digit"}).split(":");return parseInt(p[0],10)+parseInt(p[1],10)/60}
+function isPeak(d){return!isWeekendET(d)&&getETH(d)>=PEAK_S&&getETH(d)<PEAK_E}
+function fmt(n){return String(Math.floor(n)).padStart(2,"0")}
+function fH(h){const w=((h%24)+24)%24;return fmt(w)+":"+fmt((w%1)*60)}
+function fCD(ms){if(ms<=0||isNaN(ms))return"00:00:00";const s=Math.floor(ms/1000);return fmt(Math.floor(s/3600))+":"+fmt(Math.floor(s%3600/60))+":"+fmt(s%60)}
+function etNow(d){return new Date(d.toLocaleString("en-US",{timeZone:"America/New_York"}))}
+
+function renderSchedule(){
+  const now=new Date(),el=document.getElementById("schedule");
+  if(isWeekendET(now)){el.innerHTML='<div class="sched-weekend"><div class="main">Off-peak all day</div><div class="sub">Weekend -- your usage is doubled around the clock</div></div>';return}
+  const ps=etToLocal(PEAK_S),pe=etToLocal(PEAK_E),cross=ps>pe;
+  if(cross){
+    el.innerHTML='<div class="sched-grid"><div class="sched-block"><div class="sched-type off">Off-peak</div><div class="sched-hours">'+fH(pe)+' - '+fH(ps)+'</div></div><div class="sched-block"><div class="sched-type on">Peak</div><div class="sched-hours">'+fH(ps)+' - '+fH(pe)+' +1d</div></div></div>';
+  } else {
+    el.innerHTML='<div class="sched-grid"><div class="sched-block"><div class="sched-type off">Off-peak</div><div class="sched-hours">'+fH(0)+' - '+fH(ps)+'</div></div><div class="sched-block"><div class="sched-type on">Peak</div><div class="sched-hours">'+fH(ps)+' - '+fH(pe)+'</div></div><div class="sched-block"><div class="sched-type off">Off-peak</div><div class="sched-hours">'+fH(pe)+' - 24:00</div></div></div>';
+  }
+  const bar=document.getElementById("tl-bar");
+  bar.querySelectorAll(".tl-peak").forEach(e=>e.remove());
+  if(cross){addPk(bar,ps,24);addPk(bar,0,pe)}else{addPk(bar,ps,pe)}
+}
+
+function addPk(bar,f,t){const s=document.createElement("div");s.className="tl-peak";s.style.left=(f/24*100)+"%";s.style.width=((t-f)/24*100)+"%";bar.appendChild(s)}
+
+function renderCal(){
+  document.getElementById("cal-hdr").innerHTML=["M","T","W","T","F","S","S"].map(d=>'<div class="cal-hdr">'+d+'</div>').join("");
+  const c=document.getElementById("cal"),td=new Date();td.setHours(0,0,0,0);
+  const s=new Date(2026,2,9),e=new Date(2026,2,30);let h="";const d=new Date(s);
+  while(d<e){
+    const inp=d>=new Date(2026,2,13)&&d<=new Date(2026,2,27);
+    const we=d.getDay()===0||d.getDay()===6;
+    const isT=d.getTime()===td.getTime();
+    let cl="cal-day";
+    if(!inp)cl+=" out";else if(isT)cl+=" today";else if(we)cl+=" we";else cl+=" promo";
+    h+='<div class="'+cl+'">'+d.getDate()+'</div>';d.setDate(d.getDate()+1);
+  }
+  c.innerHTML=h;
+}
+
+function update(){
+  const now=new Date(),pill=document.getElementById("status-pill"),txt=document.getElementById("status-text"),cd=document.getElementById("countdown"),cdl=document.getElementById("countdown-label");
+  if(now<PROMO_START){
+    pill.className="status-pill waiting";txt.textContent="Starting soon";cd.textContent=fCD(PROMO_START-now);cdl.textContent="until promotion begins";
+  }else if(now>=PROMO_END){
+    pill.className="status-pill ended";txt.textContent="Promotion ended";cd.textContent="--";cdl.textContent="Limits are back to standard";
+  }else if(isPeak(now)){
+    pill.className="status-pill peak";txt.textContent="Peak hours";
+    const en=etNow(now),t=new Date(en);t.setHours(PEAK_E,0,0,0);cd.textContent=fCD(t-en);cdl.textContent="until off-peak begins";
+  }else{
+    pill.className="status-pill off-peak";txt.textContent="Off-peak -- 2x usage active";
+    const en=etNow(now),ed=en.getDay();
+    if(isWeekendET(now)){
+      const a=ed===6?2:1,t=new Date(en);t.setDate(t.getDate()+a);t.setHours(PEAK_S,0,0,0);cd.textContent=fCD(t-en);cdl.textContent="off-peak until Monday";
+    }else{
+      const eh=en.getHours()+en.getMinutes()/60;let t;
+      if(eh<PEAK_S){t=new Date(en);t.setHours(PEAK_S,0,0,0)}
+      else{t=new Date(en);t.setDate(t.getDate()+1);const td=t.getDay();if(td===6)t.setDate(t.getDate()+2);else if(td===0)t.setDate(t.getDate()+1);t.setHours(PEAK_S,0,0,0)}
+      cd.textContent=fCD(t-en);cdl.textContent="until next peak";
+    }
+  }
+  document.getElementById("tl-now").style.left=((now.getHours()+now.getMinutes()/60)/24*100)+"%";
+  if(now>=PROMO_START&&now<PROMO_END){
+    const p=((now-PROMO_START)/(PROMO_END-PROMO_START))*100;
+    document.getElementById("prog-fill").style.width=p+"%";document.getElementById("prog-pct").textContent=Math.round(p)+"%";
+  }else if(now>=PROMO_END){
+    document.getElementById("prog-fill").style.width="100%";document.getElementById("prog-pct").textContent="100%";
+  }
+}
+
+renderSchedule();renderCal();update();setInterval(update,1000);
+</script>
+</body>
+</html>
